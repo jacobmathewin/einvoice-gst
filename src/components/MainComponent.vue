@@ -135,7 +135,7 @@
 				Consignee GSTIN
 			</div>
 			<div class="col-2">
-				<input type="text" class="form-control text-center font-weight-bold" />	
+				<input type="text" class="form-control text-center font-weight-bold" v-model="consigneeGSTIN" />	
 			</div>
 		</div>
 
@@ -144,7 +144,7 @@
 				Consignee Legal Name
 			</div>
 			<div class="col-4">
-				<input type="text" class="form-control font-weight-bold" />	
+				<input type="text" class="form-control font-weight-bold" v-model="consigneeLegalName" />	
 			</div>
 		</div>
 
@@ -153,7 +153,7 @@
 				Consignee Address
 			</div>
 			<div class="col-4">
-				<textarea name="" id="" cols="30" rows="3" class="form-control font-weight-bold"></textarea>
+				<textarea name="" id="" cols="30" rows="3" class="form-control font-weight-bold" v-model="consigneeAddress"></textarea>
 			</div>
 		</div>
 		
@@ -163,7 +163,7 @@
 				Consignee Location
 			</div>
 			<div class="col-4">
-				<input type="text" class="form-control font-weight-bold" />	
+				<input type="text" class="form-control font-weight-bold" v-model="consigneeLocation" />	
 			</div>
 		</div>
 
@@ -172,7 +172,7 @@
 				Consignee PIN
 			</div>
 			<div class="col-2">
-				<input type="text" class="form-control font-weight-bold" />	
+				<input type="text" class="form-control font-weight-bold" v-model="consigneePIN" />	
 			</div>
 		</div>
 
@@ -180,10 +180,67 @@
 			<div class="col-6 text-right pt-2">
 				Consignee State
 			</div>
+			<div class="col-1 pt-2 text-center font-weight-bold">{{consigneeState}}</div>
 			<div class="col-4">
-				<input type="text" class="form-control font-weight-bold" />	
+				<input type="text" class="form-control font-weight-bold" v-model="consigneeStateName" @input="consigneeStateSearch" />	
 			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-4 offset-7">
+				<ul>
+					<li v-for="stateCode,state in consigneeStateSuggestions" v-bind:key="stateCode">
+						<a @click="selectConsigneeState(stateCode,state)" href="#consigneeState">{{state}}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+
+		<div class="row text-primary mt-3">
+			<div class="col-6 text-right">
+				EWay Bill Details
+			</div>
+			<div class="col-4 float-left">
+				<input type="checkbox" v-model="enableEwayBill" />
+			</div>
+		</div>
+
+		<div class="row pt-1" v-show="enableEwayBill">
+			<div class="col-6 text-right pt-2">
+				Distance
+			</div>
+			<div class="col-2">
+				<input type="text" class="form-control text-center font-weight-bold" v-model="ewayBillDistance" />	
+			</div>
+		</div>
+
+		<div class="row pt-1" v-show="enableEwayBill">
+			<div class="col-6 text-right pt-2">
+				Transport Doc. No.
+			</div>
+			<div class="col-2">
+				<input type="text" class="form-control font-weight-bold text-center" v-model="ewayBillTransportDocNo" />	
+			</div>
+		</div>
+
+		<div class="row pt-1" v-show="enableEwayBill">
+			<div class="col-6 text-right pt-2">
+				Transport Doc. Date
+			</div>
+			<div class="col-2">
+                <date-picker v-model="ewayBillTransportDocDate" format="DD-MM-YYYY" input-class="text-center form-control font-weight-bold"></date-picker>
+			</div>
+		</div>   
+
+		<div class="row pt-1" v-show="enableEwayBill">
+			<div class="col-6 text-right pt-2">
+				Vehicle No.
+			</div>
+			<div class="col-2">
+				<input type="text" class="form-control font-weight-bold text-center" v-model="ewayBillVehicleNo" />	
+			</div>
+		</div>        
 		
 		<div class="row text-primary mt-3">
 			<div class="col-6 text-right">Item Details</div>
@@ -210,14 +267,18 @@
 			<div class="col-1 smallText">{{item.SlNo}}</div>
 			<div class="col-1"><input class="form-control smallText" v-model="item.PrdDesc" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.HsnCd" /></div>
-			<div class="col-1"><input class="form-control text-center smallText" v-model="item.Qty" /></div>
-			<div class="col-1"><input class="form-control text-center smallText" v-model="item.UnitPrice" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.Qty" @input="calculateSubTotal(key)" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.UnitPrice" @input="calculateSubTotal(key)" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.GstRt" @input="calculateSubTotal(key)" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.TotAmt" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.CgstAmt" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.SgstAmt" /></div>
 			<div class="col-1"><input class="form-control text-center smallText" v-model="item.IgstAmt" /></div>
 			<div class="col-2"><input class="form-control text-center smallText" v-model="item.TotItemVal" /></div>
+		</div>
+
+		<div class="row text-center mt-2">
+			<div class="col-2 offset-10"><input class="form-control text-center smallText font-weight-bold" v-model="ValDtls.TotInvVal" /></div>
 		</div>
 
 		<div class="row justify-content-center pt-3 mb-5">
@@ -251,7 +312,34 @@ export default {
 			buyerStateName: 'Kerala',
 			buyerStateSuggestions: '',
 			enableConsignee: false,
-			itemsList: [],
+            itemsList: [],
+
+            enableEwayBill: false,
+            ewayBillDistance: '',
+            ewayBillTransportDocNo: '',
+            ewayBillTransportDocDate: '',
+            ewayBillVehicleNo: '',
+
+            consigneeGSTIN: '',
+            consigneeLegalName: '',
+            consigneeAddress: '',
+            consigneeLocation: '',
+            consigneePIN: '',
+            consigneeState: '',
+            consigneeStateName: '',
+
+            ValDtls:{
+               "AssVal":0,
+               "IgstVal":0,
+               "CgstVal":0,
+               "SgstVal":0,
+               "CesVal":0,
+               "StCesVal":0,
+               "Discount":0,
+               "OthChrg":0,
+               "RndOffAmt":0,
+               "TotInvVal":0
+			},
 			statesList: {
 				'JAMMU AND KASHMIR': 1,
 				'HIMACHAL PRADESH':	2,
@@ -314,25 +402,72 @@ export default {
 			this.buyerStateSuggestions = {};
 		},
 
+		consigneeStateSearch() {
+			let tempList = {};
+			for(let key in this.statesList) {
+				if(key.indexOf(this.consigneeStateName.toUpperCase())!=-1)
+					tempList[key] = this.statesList[key];
+			}
+			this.consigneeStateSuggestions = tempList;
+		},
+
+		selectConsigneeState(stateCode, state) {
+			this.consigneeState = stateCode;
+			this.consigneeStateName = state;
+			this.consigneeStateSuggestions = {};
+		},
+
 		calculateSubTotal(key) {
-			this.itemsList[key].TotAmt = parseFloat(this.itemsList[key].Qty * this.itemsList[key].UnitPrice).toFixed(2);
-			this.itemsList[key].AssAmt = this.itemsList[key].TotAmt;
+            this.itemsList[key].TotAmt = (this.itemsList[key].Qty * this.itemsList[key].UnitPrice).toFixed(2);
+            this.itemsList[key].TotAmt = parseFloat(this.itemsList[key].TotAmt);
+            this.itemsList[key].AssAmt = this.itemsList[key].TotAmt;
+            
+            this.itemsList[key].CgstAmt = 0;
+            this.itemsList[key].SgstAmt = 0;
+            this.itemsList[key].IgstAmt = 0;
+
 			if(this.buyerState==32) {
-				this.itemsList[key].CgstAmt = parseFloat(this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100 / 2).toFixed(2);
-				this.itemsList[key].SgstAmt = this.itemsList[key].CgstAmt;
+				this.itemsList[key].CgstAmt = (this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100 / 2).toFixed(2);
+                this.itemsList[key].CgstAmt = parseFloat(this.itemsList[key].CgstAmt);
+                this.itemsList[key].SgstAmt = this.itemsList[key].CgstAmt;
 			} else {
-				this.itemsList[key].IgstAmt = (this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100).toFixed(2);
+                this.itemsList[key].IgstAmt = (this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100).toFixed(2);
+                this.itemsList[key].IgstAmt = parseFloat(this.itemsList[key].IgstAmt);
 			}
 			this.itemsList[key].TotItemVal = this.itemsList[key].AssAmt + this.itemsList[key].SgstAmt + this.itemsList[key].CgstAmt + this.itemsList[key].IgstAmt;
-			console.log(this.itemsList[key].TotItemVal);
-			this.itemsList[key].TotItemVal = parseFloat(this.itemsList[key].TotItemVal).toFixed(2);
-		},
+            this.itemsList[key].TotItemVal = parseFloat(this.itemsList[key].TotItemVal).toFixed(2);
+            this.calculateTotal();
+        },
+        
+        calculateTotal() {
+            this.ValDtls.AssVal = 0;
+            this.ValDtls.CgstVal = 0;
+            this.ValDtls.SgstVal = 0;
+            this.ValDtls.IgstVal = 0;
+            this.ValDtls.TotInvVal = 0;
+            for(let key in this.itemsList) {
+                this.ValDtls.AssVal += parseFloat(this.itemsList[key].AssAmt);
+                this.ValDtls.CgstVal += parseFloat(this.itemsList[key].CgstAmt);
+                this.ValDtls.SgstVal += parseFloat(this.itemsList[key].SgstAmt);
+                this.ValDtls.IgstVal += parseFloat(this.itemsList[key].IgstAmt);
+                this.ValDtls.TotInvVal += parseFloat(this.itemsList[key].TotItemVal);
+            }
+        },
 
 		getFormattedDate(date) {
 			return moment(date).format("DD/MM/YYYY");
 		},
 
 		saveFile: function() {
+
+            // clone item details
+            let tempItemsList = this.itemsList.slice(0);
+            for(let key in tempItemsList) {
+                tempItemsList[key].UnitPrice = parseFloat(tempItemsList[key].UnitPrice);
+                tempItemsList[key].TotItemVal = parseFloat(tempItemsList[key].TotItemVal);
+                tempItemsList[key].Qty = parseFloat(tempItemsList[key].Qty);
+                tempItemsList[key].GstRt = parseFloat(tempItemsList[key].GstRt);
+            }
 
 			let jsonData = [{
 			Version: "1.1",
@@ -380,47 +515,43 @@ export default {
 
 			"ShipDtls":null,
 
-			"ValDtls":{
-               "AssVal":28222.50,
-               "IgstVal":0,
-               "CgstVal":1693.35,
-               "SgstVal":1693.35,
-               "CesVal":0,
-               "StCesVal":0,
-               "Discount":0,
-               "OthChrg":0,
-               "RndOffAmt":0,
-               "TotInvVal":31609.20
-			},
+            "ValDtls":this.ValDtls,
 
 			"EwbDtls":{
                "TransId":null,
                "TransName":null,
                "TransMode":"1",
-               "Distance":50,
-               "TransDocNo":"44",
-               "TransDocDt":"12/04/2021",
-               "VehNo":"KL11N1901",
+               "Distance":0,
+               "TransDocNo":"0",
+               "TransDocDt":"01/04/2021",
+               "VehNo":"XXX",
                "VehType":"R"
 			},
 
-			"ItemList": this.itemsList
+			"ItemList": tempItemsList
             }];
 
 			if(this.enableConsignee) {
 				jsonData[0]["ShipDtls"] = {
-						"Gstin":"32AALFB0400A1ZL",
-						"LglNm":"BISMI PACK",
+						"Gstin":this.consigneeGSTIN,
+						"LglNm":this.consigneeLegalName,
 						"TrdNm":null,
-						"Addr1":"Vattakkerimuttath Kadavil Road, Aroor PO, Alappuzha",
+						"Addr1":this.consigneeAddress,
 						"Addr2":null,
-						"Loc":"Aroor",
-						"Pin":688534,
-						"Stcd":"32"
+						"Loc":this.consigneeLocation,
+						"Pin":parseInt(this.consigneePIN),
+						"Stcd":this.consigneeState+''
 					};
-			}
-
-			console.log(jsonData);
+            }
+            
+            if(this.enableEwayBill) {
+                jsonData[0]["EwbDtls"]['Distance'] = parseInt(this.ewayBillDistance);
+                jsonData[0]["EwbDtls"]['TransDocNo'] = this.ewayBillTransportDocNo;
+                jsonData[0]["EwbDtls"]['TransDocDt'] = moment(this.ewayBillTransportDocDate).format("DD/MM/YYYY");
+                jsonData[0]["EwbDtls"]['VehNo'] = this.ewayBillVehicleNo;
+            } else {
+                jsonData[0]["EwbDtls"] = null;
+            }
 
 			const data = JSON.stringify(jsonData)
 			const blob = new Blob([data], {type: 'text/plain'})
@@ -434,7 +565,7 @@ export default {
 		},
 		addItem() {
 			let tempObj = [{
-				"SlNo":this.itemsList.length+1,
+				"SlNo": (this.itemsList.length+1)+'',
 				"PrdDesc":"M F Kraft Paper",
 				"IsServc":"N",
 				"HsnCd":"48041100",
@@ -459,7 +590,6 @@ export default {
 				"TotItemVal":0
 			}];
 			this.itemsList.push(...tempObj);
-			console.log(this.itemsList);
 		}
 	}
 }
