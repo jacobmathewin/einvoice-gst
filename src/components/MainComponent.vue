@@ -192,17 +192,32 @@
 			</div>
 		</div>
 
-		<div class="row text-center">
+		<div class="row text-center font-weight-bold">
 			<div class="col-1">S.No.</div>
 			<div class="col-1">Description</div>
 			<div class="col-1">HSN Code</div>
 			<div class="col-1">Qty (kg)</div>
 			<div class="col-1">Unit Price</div>
-			<div class="col-2">Value</div>
+			<div class="col-1">GST Rate</div>
+			<div class="col-1">Value</div>
 			<div class="col-1">CGST</div>
 			<div class="col-1">SGST</div>
 			<div class="col-1">IGST</div>
 			<div class="col-2">Total</div>
+		</div>
+
+		<div class="row text-center mt-2" v-for="item,key in itemsList" :key="key">
+			<div class="col-1 smallText">{{item.SlNo}}</div>
+			<div class="col-1"><input class="form-control smallText" v-model="item.PrdDesc" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.HsnCd" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.Qty" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.UnitPrice" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.GstRt" @input="calculateSubTotal(key)" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.TotAmt" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.CgstAmt" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.SgstAmt" /></div>
+			<div class="col-1"><input class="form-control text-center smallText" v-model="item.IgstAmt" /></div>
+			<div class="col-2"><input class="form-control text-center smallText" v-model="item.TotItemVal" /></div>
 		</div>
 
 		<div class="row justify-content-center pt-3 mb-5">
@@ -297,6 +312,20 @@ export default {
 			this.buyerState = stateCode;
 			this.buyerStateName = state;
 			this.buyerStateSuggestions = {};
+		},
+
+		calculateSubTotal(key) {
+			this.itemsList[key].TotAmt = parseFloat(this.itemsList[key].Qty * this.itemsList[key].UnitPrice).toFixed(2);
+			this.itemsList[key].AssAmt = this.itemsList[key].TotAmt;
+			if(this.buyerState==32) {
+				this.itemsList[key].CgstAmt = parseFloat(this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100 / 2).toFixed(2);
+				this.itemsList[key].SgstAmt = this.itemsList[key].CgstAmt;
+			} else {
+				this.itemsList[key].IgstAmt = (this.itemsList[key].TotAmt * this.itemsList[key].GstRt / 100).toFixed(2);
+			}
+			this.itemsList[key].TotItemVal = this.itemsList[key].AssAmt + this.itemsList[key].SgstAmt + this.itemsList[key].CgstAmt + this.itemsList[key].IgstAmt;
+			console.log(this.itemsList[key].TotItemVal);
+			this.itemsList[key].TotItemVal = parseFloat(this.itemsList[key].TotItemVal).toFixed(2);
 		},
 
 		getFormattedDate(date) {
@@ -405,21 +434,21 @@ export default {
 		},
 		addItem() {
 			let tempObj = [{
-				"SlNo":"1",
+				"SlNo":this.itemsList.length+1,
 				"PrdDesc":"M F Kraft Paper",
 				"IsServc":"N",
 				"HsnCd":"48041100",
-				"Qty":795,
+				"Qty":0,
 				"Unit":"KGS",
-				"UnitPrice":35.50,
-				"TotAmt":28222.5,
+				"UnitPrice":0,
+				"TotAmt":0,
 				"Discount":0,
 				"PreTaxVal":0,
-				"AssAmt":28222.5,
+				"AssAmt":0,
 				"GstRt":12,
 				"IgstAmt":0,
-				"CgstAmt":1693.35,
-				"SgstAmt":1693.35,
+				"CgstAmt":0,
+				"SgstAmt":0,
 				"CesRt":0,
 				"CesAmt":0,
 				"CesNonAdvlAmt":0,
@@ -427,7 +456,7 @@ export default {
 				"StateCesAmt":0,
 				"StateCesNonAdvlAmt":0,
 				"OthChrg":0,
-				"TotItemVal":31609.20
+				"TotItemVal":0
 			}];
 			this.itemsList.push(...tempObj);
 			console.log(this.itemsList);
@@ -435,3 +464,10 @@ export default {
 	}
 }
 </script>
+
+<style>
+	.smallText {
+		font-size: 9pt;
+		font-weight: bold;
+	}
+</style>
